@@ -113,9 +113,13 @@
   const btnYes = document.getElementById("yes");
   const btnNo  = document.getElementById("no");
 
-  btnYes.addEventListener("click", () => {
-    window.location.href = CARD_LINK;
-  });
+btnYes.addEventListener("click", () => {
+  // cấp quyền phát nhạc cho trang sau
+  localStorage.setItem("playMusic", "yes");
+
+  // chuyển sang thiệp
+  window.location.href = CARD_LINK;
+});
 
   // trạng thái nút "Không" đã "bung" khỏi hàng ngang chưa
   let unleashed = false;
