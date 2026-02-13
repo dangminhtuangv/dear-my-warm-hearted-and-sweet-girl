@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Valentine của anh</title>
+  <style>
+    :root { --w: 360px; --h: 220px; }
+    body{
+      margin:0; min-height:100vh; display:grid; place-items:center;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(circle at top, #fff, #ffe6ef);
+      color:#111;
+    }
+    .card{
+      width:min(92vw, 520px);
+      background:#fff; border-radius:20px; padding:28px 22px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.10);
+      text-align:center;
+    }
+    h1{ margin:0 0 10px; font-size:20px; line-height:1.35; }
+    p{ margin:0 0 18px; color:#444; font-size:14px; }
+    .playground{
+      position:relative;
+      width:min(92vw, 520px);
+      height:280px;
+      margin:14px auto 0;
+      border-radius:18px;
+      background: linear-gradient(180deg, #fff7fb, #ffffff);
+      border:1px solid rgba(0,0,0,.06);
+      overflow:hidden;
+    }
+    button{
+      position:absolute;
+      border:0;
+      border-radius:999px;
+      padding:12px 18px;
+      font-size:16px;
+      cursor:pointer;
+      box-shadow: 0 8px 18px rgba(0,0,0,.12);
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #yes{
+      left: 28%;
+      top: 55%;
+      background:#ff3b7a;
+      color:white;
+    }
+    #no{
+      left: 58%;
+      top: 55%;
+      background:#f1f3f5;
+      color:#111;
+    }
+    .hint{
+      position:absolute; left:12px; bottom:10px;
+      font-size:12px; color:#666;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card">
+    <h1>Em có muốn làm người yêu của anh trong ngày Valentine không?</h1>
+    <p>Chọn thật lòng nha 😳</p>
+
+    <div class="playground" id="area" aria-label="Khu vực chọn đáp án">
+      <button id="yes" type="button">Có 💖</button>
+      <button id="no" type="button">Không</button>
+      <div class="hint">Gợi ý: thử bấm “Không” xem…</div>
+    </div>
+  </div>
+
+  <script>
+    // ====== CHỈNH LINK DẪN TỚI THIỆP Ở ĐÂY ======
+    // Nếu anh đặt trang thiệp là "card.html" cùng thư mục, giữ nguyên như dưới.
+    const CARD_LINK = "card.html";
+
+    const area = document.getElementById("area");
+    const btnYes = document.getElementById("yes");
+    const btnNo  = document.getElementById("no");
+
+    btnYes.addEventListener("click", () => {
+      window.location.href = CARD_LINK;
+    });
+
+    // Hàm đưa nút "Không" tới vị trí ngẫu nhiên nhưng vẫn nằm gọn trong khung
+    function moveNoButton() {
+      const areaRect = area.getBoundingClientRect();
+      const noRect = btnNo.getBoundingClientRect();
+
+      const padding = 10;
+      const maxX = areaRect.width - noRect.width - padding;
+      const maxY = areaRect.height - noRect.height - padding;
+
+      const x = Math.max(padding, Math.random() * maxX);
+      const y = Math.max(padding, Math.random() * maxY);
+
+      btnNo.style.left = `${x}px`;
+      btnNo.style.top  = `${y}px`;
+    }
+
+    // Né chuột
+    btnNo.addEventListener("mouseenter", moveNoButton);
+    // Né cả khi người dùng đưa con trỏ/nhấn chạm (điện thoại)
+    btnNo.addEventListener("pointerenter", moveNoButton);
+    btnNo.addEventListener("pointerdown",  moveNoButton);
+    // (tuỳ chọn) nếu người dùng cố tab tới nút "Không"
+    btnNo.addEventListener("focus", moveNoButton);
+
+    // Đặt vị trí "Không" ngẫu nhiên ngay từ đầu (nhìn tự nhiên hơn)
+    window.addEventListener("load", () => {
+      moveNoButton();
+    });
+  </script>
+</body>
+</html>
