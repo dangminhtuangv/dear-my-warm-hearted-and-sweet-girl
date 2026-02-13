@@ -5,6 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Valentine của anh</title>
   <style>
+    .music-btn{
+  position:absolute;
+  right:14px;
+  top:14px;
+  padding:8px 14px;
+  border-radius:999px;
+  border:none;
+  background:#111;
+  color:white;
+  font-size:14px;
+  cursor:pointer;
+  box-shadow:0 6px 14px rgba(0,0,0,.18);
+}
+
+.music-btn:active{
+  transform:scale(0.95);
+}
+
+    
     :root { --w: 360px; --h: 220px; }
     body{
       margin:0; min-height:100vh; display:grid; place-items:center;
@@ -67,8 +86,15 @@
   </style>
 </head>
 
+<audio id="bgm" preload="auto" loop>
+  <source src="music2.mp3" type="audio/mpeg">
+</audio>
+
+  
 <body>
   <div class="card">
+    <button id="musicBtn" class="music-btn">🔊 Bật nhạc</button>
+
     <h1> Hoài Thu ơi, em có muốn làm công chúa của anh trong ngày Valentine chứ?</h1>
     <p>Chọn thật lòng nha 🥰🫣</p>
 
@@ -125,7 +151,31 @@
 
     unleashed = true;
   }
+function teleportNoButton() {
+  const areaRect = area.getBoundingClientRect();
+  const noRect = btnNo.getBoundingClientRect();
 
+  const pad = 10;
+  const maxLeft = areaRect.width - noRect.width - pad;
+  const maxTop  = areaRect.height - noRect.height - pad;
+
+  // chọn vị trí ngẫu nhiên nhưng tránh vùng giữa (để đỡ bị bấm trúng)
+  let x, y;
+  for (let i = 0; i < 8; i++) {
+    x = pad + Math.random() * (maxLeft - pad);
+    y = pad + Math.random() * (maxTop - pad);
+
+    // tránh vùng trung tâm (optional)
+    const cx = areaRect.width / 2;
+    const cy = areaRect.height / 2;
+    const distToCenter = Math.hypot((x + noRect.width/2) - cx, (y + noRect.height/2) - cy);
+
+    if (distToCenter > 90) break;
+  }
+
+  btnNo.style.left = `${clamp(x, pad, maxLeft)}px`;
+  btnNo.style.top  = `${clamp(y, pad, maxTop)}px`;
+}
   // Né thông minh: đẩy nút "Không" ra xa khỏi con trỏ
   function smartEvade(pointerClientX, pointerClientY) {
     unleashNoButton();
@@ -162,8 +212,17 @@
     const maxLeft = areaRect.width - noRect.width - pad;
     const maxTop  = areaRect.height - noRect.height - pad;
 
-    btnNo.style.left = `${clamp(newLeft, pad, maxLeft)}px`;
-    btnNo.style.top  = `${clamp(newTop,  pad, maxTop)}px`;
+const finalLeft = clamp(newLeft, pad, maxLeft);
+const finalTop  = clamp(newTop,  pad, maxTop);
+
+// nếu gần như không di chuyển (kẹt biên), teleport sang chỗ khác
+const moved = Math.hypot(finalLeft - cur.left, finalTop - cur.top);
+const stuck = moved < 18 || finalLeft === pad || finalLeft === maxLeft || finalTop === pad || finalTop === maxTop;
+
+btnNo.style.left = `${finalLeft}px`;
+btnNo.style.top  = `${finalTop}px`;
+
+if (stuck) teleportNoButton();
   }
 
   // Nếu con trỏ đến gần nút trong một bán kính nhất định thì né
@@ -208,6 +267,26 @@
     const areaRect = area.getBoundingClientRect();
     smartEvade(areaRect.left + areaRect.width/2, areaRect.top + areaRect.height/2);
   });
+  const bgm = document.getElementById("bgm");
+const musicBtn = document.getElementById("musicBtn");
+
+let playing = false;
+
+musicBtn.addEventListener("click", async () => {
+  try{
+    if(!playing){
+      await bgm.play();
+      musicBtn.textContent = "🔇 Tắt nhạc";
+      playing = true;
+    }else{
+      bgm.pause();
+      musicBtn.textContent = "🔊 Bật nhạc";
+      playing = false;
+    }
+  }catch(err){
+    console.log("Trình duyệt chặn autoplay:", err);
+  }
+});
 </script>
 
 </body>
