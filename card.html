@@ -65,6 +65,8 @@
 </head>
 <body>
   <div class="card">
+    <button id="musicBtn" class="music-btn" type="button">🎵 Bật nhạc</button>
+
     <h1> Mến gửi công chúa của anh - Hoài Thu, </h1>
 
     <div class="msg">
@@ -85,19 +87,29 @@ P/S: Những lời "sến súa" và một số thứ nữa khi nào gặp thì a
     </p>
   </div>
   <audio id="bgm" autoplay loop>
-  <source src="music.mp3" type="audio/mpeg">
+  <source src="music2.mp3" type="audio/mpeg">
 </audio>
-    <script>
+<script>
 const bgm = document.getElementById("bgm");
+const musicBtn = document.getElementById("musicBtn");
 
-// nếu người dùng vừa bấm "Có"
-if(localStorage.getItem("playMusic") === "yes"){
-  // cố phát nhạc
-  bgm.play().catch(()=>{});
+let playing = false;
 
-  // xoá trạng thái để reload không phát lại vô hạn
-  localStorage.removeItem("playMusic");
-}
+musicBtn.addEventListener("click", async () => {
+  try{
+    if(!playing){
+      await bgm.play();
+      musicBtn.textContent = "⏸ Tắt nhạc";
+      playing = true;
+    }else{
+      bgm.pause();
+      musicBtn.textContent = "🎵 Bật nhạc";
+      playing = false;
+    }
+  }catch(e){
+    alert("Không phát được nhạc. Kiểm tra file music.mp3 có đúng tên chưa.");
+  }
+});
 </script>
 </body>
 </html>
