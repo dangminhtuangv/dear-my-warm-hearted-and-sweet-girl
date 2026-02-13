@@ -4,112 +4,115 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Thiệp Valentine</title>
+
   <style>
-      body{
-    margin:0;
-    min-height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-    background: radial-gradient(circle at top, #fff, #ffe6ef);
-    padding:20px;
-  }
-
-  .card{
-    width:min(92vw, 680px);
-    background:#ffffff;
-    border-radius:22px;
-    padding:28px 24px;
-    box-shadow:0 15px 40px rgba(0,0,0,.15);
-    line-height:1.7;
-    color:#222;
-  }
-
-  h1{
-    margin-top:0;
-    color:#e91e63;
-  }
-
-  a{
-    color:#e91e63;
-    text-decoration:none;
-    font-weight:500;
-  }
-
-  a:hover{
-    text-decoration:underline;
-  }
-    
-  
     body{
-      margin:0; min-height:100vh; display:grid; place-items:center;
+      margin:0;
+      min-height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:center;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background: radial-gradient(circle at top, #fff, #fff0f6);
-      color:#111;
+      background: radial-gradient(circle at top, #fff, #ffe6ef);
       padding:20px;
+      color:#111;
     }
+
     .card{
+      position:relative; /* để nút nhạc định vị góc */
       width:min(92vw, 680px);
-      background:#fff; border-radius:22px; padding:28px 22px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.10);
+      background:#ffffff;
+      border-radius:22px;
+      padding:28px 24px;
+      box-shadow:0 15px 40px rgba(0,0,0,.15);
+      line-height:1.7;
+      color:#222;
     }
-    h1{ margin:0 0 12px; font-size:22px; }
+
+    .music-btn{
+      position:absolute;
+      right:18px;
+      top:18px;
+      padding:10px 16px;
+      border-radius:999px;
+      border:none;
+      background:#e91e63;
+      color:white;
+      font-size:14px;
+      cursor:pointer;
+      box-shadow:0 6px 16px rgba(0,0,0,.2);
+    }
+    .music-btn:active{ transform:scale(0.97); }
+
+    h1{
+      margin:0 0 12px;
+      font-size:22px;
+      color:#e91e63;
+    }
+
     .msg{
-      font-size:16px; line-height:1.7; color:#222;
-      white-space: pre-wrap;
+      font-size:16px;
+      white-space:pre-wrap;
     }
-    .sig{ margin-top:18px; color:#444; }
-    a{ color:#ff3b7a; text-decoration:none; }
+
+    .sig{
+      margin-top:18px;
+      color:#444;
+      text-align:right;
+      font-weight:600;
+    }
+
+    a{
+      color:#e91e63;
+      text-decoration:none;
+      font-weight:500;
+    }
+    a:hover{ text-decoration:underline; }
   </style>
 </head>
+
 <body>
   <div class="card">
     <button id="musicBtn" class="music-btn" type="button">🎵 Bật nhạc</button>
 
-    <h1> Mến gửi công chúa của anh - Hoài Thu, </h1>
+    <h1>Mến gửi công chúa của anh - Hoài Thu,</h1>
 
-    <div class="msg">
-Anh rất vui và hạnh phúc vì valentine năm nay có em trong cuộc đời. Đây là một dịp rất đặc biệt, mặc dù chúng mình mới yêu nhưng rơi vào dịp cả hai cùng xa nhau.
-Anh iu em và nhớ em nhiều lắm. Cảm ơn em vì đã ở bên cạnh anh và yêu thương anh. Mong chúng ta sớm gặp nhau để mình tiếp tục hihi haha nha. 
-P/S: Những lời "sến súa" và một số thứ nữa khi nào gặp thì anh sẽ cho em xemmm :3.
-    </div>
+    <div class="msg">Anh rất vui và hạnh phúc vì valentine năm nay có em trong cuộc đời. Đây là một dịp rất đặc biệt, mặc dù chúng mình mới yêu nhưng rơi vào dịp cả hai cùng xa nhau.
+Anh iu em và nhớ em nhiều lắm. Cảm ơn em vì đã ở bên cạnh anh và yêu thương anh. Mong chúng ta sớm gặp nhau để mình tiếp tục hihi haha nha.
+P/S: Những lời "sến súa" và một số thứ nữa khi nào gặp thì anh sẽ cho em xemmm :3.</div>
 
-    <div class="sig">
-      — <strong> Iuuu công chúa của anh nhất, 
-        <p style="text-align:right; margin-top:20px;">
-  — Anh Tuấn bíu
-</p>
-    </div>
+    <div class="sig">— Anh Tuấn bíu</div>
 
     <p style="margin-top:18px; font-size:14px; color:#666;">
       <a href="index.html">← Quay lại</a>
     </p>
   </div>
-  <audio id="bgm" autoplay loop>
-  <source src="music2.mp3" type="audio/mpeg">
-</audio>
-<script>
-const bgm = document.getElementById("bgm");
-const musicBtn = document.getElementById("musicBtn");
 
-let playing = false;
+  <!-- Nhạc: nhớ upload đúng tên music2.mp3 -->
+  <audio id="bgm" loop>
+    <source src="music2.mp3" type="audio/mpeg">
+  </audio>
 
-musicBtn.addEventListener("click", async () => {
-  try{
-    if(!playing){
-      await bgm.play();
-      musicBtn.textContent = "⏸ Tắt nhạc";
-      playing = true;
-    }else{
-      bgm.pause();
-      musicBtn.textContent = "🎵 Bật nhạc";
-      playing = false;
-    }
-  }catch(e){
-    alert("Không phát được nhạc. Kiểm tra file music.mp3 có đúng tên chưa.");
-  }
-});
-</script>
+  <script>
+    const bgm = document.getElementById("bgm");
+    const musicBtn = document.getElementById("musicBtn");
+    let playing = false;
+
+    musicBtn.addEventListener("click", async () => {
+      try{
+        if(!playing){
+          await bgm.play();
+          musicBtn.textContent = "⏸ Tắt nhạc";
+          playing = true;
+        }else{
+          bgm.pause();
+          musicBtn.textContent = "🎵 Bật nhạc";
+          playing = false;
+        }
+      }catch(e){
+        alert("Không phát được nhạc. Kiểm tra file music2.mp3 có tồn tại và đúng tên không.");
+      }
+    });
+  </script>
 </body>
 </html>
