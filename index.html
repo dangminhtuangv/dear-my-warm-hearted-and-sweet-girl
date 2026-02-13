@@ -79,47 +79,136 @@
     </div>
   </div>
 
-  <script>
-    // ====== CHỈNH LINK DẪN TỚI THIỆP Ở ĐÂY ======
-    // Nếu anh đặt trang thiệp là "card.html" cùng thư mục, giữ nguyên như dưới.
-    const CARD_LINK = "card.html";
+<script>
+  // ====== CHỈNH LINK DẪN TỚI THIỆP Ở ĐÂY ======
+  const CARD_LINK = "card.html";
 
-    const area = document.getElementById("area");
-    const btnYes = document.getElementById("yes");
-    const btnNo  = document.getElementById("no");
+  const area  = document.getElementById("area");
+  const btnYes = document.getElementById("yes");
+  const btnNo  = document.getElementById("no");
 
-    btnYes.addEventListener("click", () => {
-      window.location.href = CARD_LINK;
-    });
+  btnYes.addEventListener("click", () => {
+    window.location.href = CARD_LINK;
+  });
 
-    // Hàm đưa nút "Không" tới vị trí ngẫu nhiên nhưng vẫn nằm gọn trong khung
-    function moveNoButton() {
-      const areaRect = area.getBoundingClientRect();
-      const noRect = btnNo.getBoundingClientRect();
+  // trạng thái nút "Không" đã "bung" khỏi hàng ngang chưa
+  let unleashed = false;
 
-      const padding = 10;
-      const maxX = areaRect.width - noRect.width - padding;
-      const maxY = areaRect.height - noRect.height - padding;
+  // Lấy vị trí hiện tại (trong khung) của nút "Không"
+  function getNoPos() {
+    // Nếu chưa từng set left/top thì coi như (0,0) theo relative layout
+    const left = parseFloat(btnNo.style.left || "0");
+    const top  = parseFloat(btnNo.style.top  || "0");
+    return { left, top };
+  }
 
-      const x = Math.max(padding, Math.random() * maxX);
-      const y = Math.max(padding, Math.random() * maxY);
+  // Đảm bảo nút luôn nằm trong khung
+  function clamp(v, min, max) {
+    return Math.max(min, Math.min(max, v));
+  }
 
-      btnNo.style.left = `${x}px`;
-      btnNo.style.top  = `${y}px`;
+  // Khi bắt đầu "né", ta chuyển nút sang position:absolute tại đúng chỗ nó đang đứng,
+  // để nó bay tự do mà không làm layout bị giật.
+  function unleashNoButton() {
+    if (unleashed) return;
+
+    const areaRect = area.getBoundingClientRect();
+    const noRect = btnNo.getBoundingClientRect();
+
+    // vị trí hiện tại của nút tính theo khung area
+    const x = noRect.left - areaRect.left;
+    const y = noRect.top  - areaRect.top;
+
+    btnNo.style.position = "absolute";
+    btnNo.style.left = `${x}px`;
+    btnNo.style.top  = `${y}px`;
+
+    unleashed = true;
+  }
+
+  // Né thông minh: đẩy nút "Không" ra xa khỏi con trỏ
+  function smartEvade(pointerClientX, pointerClientY) {
+    unleashNoButton();
+
+    const areaRect = area.getBoundingClientRect();
+    const noRect = btnNo.getBoundingClientRect();
+
+    // Tọa độ con trỏ trong hệ toạ độ của area
+    const px = pointerClientX - areaRect.left;
+    const py = pointerClientY - areaRect.top;
+
+    // Tâm nút "Không" trong area
+    const nx = (noRect.left - areaRect.left) + noRect.width / 2;
+    const ny = (noRect.top  - areaRect.top)  + noRect.height / 2;
+
+    // Vector từ con trỏ -> nút
+    let vx = nx - px;
+    let vy = ny - py;
+
+    // Nếu con trỏ nằm đúng giữa nút (vx,vy ~ 0), chọn hướng ngẫu nhiên nhẹ
+    const len = Math.hypot(vx, vy) || 1;
+    vx /= len;
+    vy /= len;
+
+    // "độ ác" = nhảy xa bao nhiêu mỗi lần né (px)
+    const jump = 120;
+
+    const cur = getNoPos();
+    const newLeft = cur.left + vx * jump;
+    const newTop  = cur.top  + vy * jump;
+
+    // giới hạn trong khung
+    const pad = 8;
+    const maxLeft = areaRect.width - noRect.width - pad;
+    const maxTop  = areaRect.height - noRect.height - pad;
+
+    btnNo.style.left = `${clamp(newLeft, pad, maxLeft)}px`;
+    btnNo.style.top  = `${clamp(newTop,  pad, maxTop)}px`;
+  }
+
+  // Nếu con trỏ đến gần nút trong một bán kính nhất định thì né
+  function onPointerMove(e) {
+    const areaRect = area.getBoundingClientRect();
+    const noRect = btnNo.getBoundingClientRect();
+
+    // khoảng cách từ con trỏ tới tâm nút "Không"
+    const px = e.clientX;
+    const py = e.clientY;
+    const nx = noRect.left + noRect.width / 2;
+    const ny = noRect.top  + noRect.height / 2;
+
+    const dist = Math.hypot(nx - px, ny - py);
+
+    // "độ nhạy" = càng lớn càng khó bấm (px)
+    const triggerRadius = 130;
+
+    if (dist < triggerRadius) {
+      smartEvade(px, py);
     }
+  }
 
-    // Né chuột
-    btnNo.addEventListener("mouseenter", moveNoButton);
-    // Né cả khi người dùng đưa con trỏ/nhấn chạm (điện thoại)
-    btnNo.addEventListener("pointerenter", moveNoButton);
-    btnNo.addEventListener("pointerdown",  moveNoButton);
-    // (tuỳ chọn) nếu người dùng cố tab tới nút "Không"
-    btnNo.addEventListener("focus", moveNoButton);
+  // PC: né theo chuyển động chuột
+  area.addEventListener("mousemove", onPointerMove);
 
-    // Đặt vị trí "Không" ngẫu nhiên ngay từ đầu (nhìn tự nhiên hơn)
-    window.addEventListener("load", () => {
-      moveNoButton();
-    });
-  </script>
+  // Mobile: cứ chạm/đưa ngón tay gần thì né
+  area.addEventListener("pointermove", (e) => {
+    // chỉ xử lý khi là touch hoặc pen, tránh trùng với mouse
+    if (e.pointerType === "touch" || e.pointerType === "pen") {
+      onPointerMove(e);
+    }
+  });
+
+  // Nếu người dùng cố "tap" đúng nút Không, cho nó chạy luôn
+  btnNo.addEventListener("pointerdown", (e) => {
+    smartEvade(e.clientX, e.clientY);
+  });
+
+  // Bonus: nếu tab focus tới nút Không cũng né
+  btnNo.addEventListener("focus", () => {
+    const areaRect = area.getBoundingClientRect();
+    smartEvade(areaRect.left + areaRect.width/2, areaRect.top + areaRect.height/2);
+  });
+</script>
+
 </body>
 </html>
