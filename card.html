@@ -5,9 +5,57 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Thiệp Valentine</title>
   <style>
-    <audio controls autoplay loop>
+      body{
+    margin:0;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background: radial-gradient(circle at top, #fff, #ffe6ef);
+    padding:20px;
+  }
+
+  .card{
+    width:min(92vw, 680px);
+    background:#ffffff;
+    border-radius:22px;
+    padding:28px 24px;
+    box-shadow:0 15px 40px rgba(0,0,0,.15);
+    line-height:1.7;
+    color:#222;
+  }
+
+  h1{
+    margin-top:0;
+    color:#e91e63;
+  }
+
+  a{
+    color:#e91e63;
+    text-decoration:none;
+    font-weight:500;
+  }
+
+  a:hover{
+    text-decoration:underline;
+  }
+    
+<audio id="bgm" autoplay loop>
   <source src="music.mp3" type="audio/mpeg">
 </audio>
+    <script>
+const bgm = document.getElementById("bgm");
+
+// nếu người dùng vừa bấm "Có"
+if(localStorage.getItem("playMusic") === "yes"){
+  // cố phát nhạc
+  bgm.play().catch(()=>{});
+
+  // xoá trạng thái để reload không phát lại vô hạn
+  localStorage.removeItem("playMusic");
+}
+</script>
     body{
       margin:0; min-height:100vh; display:grid; place-items:center;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
