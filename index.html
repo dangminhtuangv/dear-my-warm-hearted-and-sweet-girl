@@ -20,16 +20,23 @@
     }
     h1{ margin:0 0 10px; font-size:20px; line-height:1.35; }
     p{ margin:0 0 18px; color:#444; font-size:14px; }
-    .playground{
-      position:relative;
-      width:min(92vw, 520px);
-      height:280px;
-      margin:14px auto 0;
-      border-radius:18px;
-      background: linear-gradient(180deg, #fff7fb, #ffffff);
-      border:1px solid rgba(0,0,0,.06);
-      overflow:hidden;
-    }
+.playground{
+  position:relative;
+  width:min(92vw, 520px);
+  height:280px;
+  margin:14px auto 0;
+  border-radius:18px;
+  background: linear-gradient(180deg, #fff7fb, #ffffff);
+  border:1px solid rgba(0,0,0,.06);
+  overflow:hidden;
+
+  /* thêm 3 dòng này */
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:20px;
+}
+
     button{
       position:absolute;
       border:0;
